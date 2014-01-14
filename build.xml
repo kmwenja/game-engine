@@ -1,0 +1,47 @@
+<project name="GameEngine" default="run">
+	<property name="bin" location="bin"/>
+	<property name="src" location="src"/>
+	<property name="lib" location="lib"/>
+	<property name="tests" location="tests"/>
+
+    <path id="mainclasspath">
+        <pathelement location="${bin}"/>
+        <fileset dir="${lib}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+	<target name="clean">
+		<delete dir="${bin}"/>
+	</target>
+	
+	<target name="compile" depends="clean">
+		<mkdir dir="${bin}"/>
+		<javac srcdir="${src}" destdir="${bin}" classpathref="mainclasspath" includeantruntime="no"/>
+	</target>
+
+    <target name="run" depends="test">
+        <java classname="com.base.engine.Main" fork="true">
+            <classpath refid="mainclasspath"/>
+            <jvmarg value="-Djava.library.path=${lib}/linux"/>
+        </java>
+    </target>
+
+	<target name="compileTest" depends="compile">
+		<javac srcdir="${tests}" destdir="${bin}" includeantruntime="no">
+			<classpath refid="mainclasspath"/>
+		</javac>
+	</target>
+
+	<target name="test" depends="compileTest">
+		<junit>
+			<classpath refid="mainclasspath"/>
+			<batchtest>
+				<fileset dir="${tests}">
+					<include name="**/*Test*" />
+				</fileset>
+			</batchtest>
+			<formatter type="brief" usefile="false"/>
+		</junit>
+	</target>
+</project>
